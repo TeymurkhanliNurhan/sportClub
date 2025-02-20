@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign In</title>
+    <script type="module" src="/signIn/signIn.js"></script>
+    <script type="module" src="/signIn/headMaster.js"></script>
+    <script type="module" src="/signIn/athlete.js"></script>
+    <style>
+        body {
+            margin-top: 50px;
+            text-align: center;
+            display: flex;
+        }
+
+        aside {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 200px;
+            height: 100%;
+            background-color: #333;
+            padding-top: 50px;
+            text-align: left;
+            display: none; /* Hidden by default */
+        }
+
+        aside a {
+            display: block;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+        }
+
+        aside a:hover {
+            background-color: #575757;
+        }
+
+        main {
+            margin-left: 220px;
+            flex-grow: 1;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        td{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<aside id="athleteLeftSection">
+    <a href="#personal-data">Personal Data</a>
+    <a href="#tournaments">Tournaments</a>
+    <a href="#group">Group</a>
+    <a href="#payments">Payments</a>
+</aside>
+
+<main>
+    <form id="signInForm">
+        <label for="personID">ID:</label>
+        <input type="text" id="personID" name="personID" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="container"></div>
+    <div id="athleteGroupMates"></div>
+    <div id="groupsChange"></div>
+</main>
+
+<!--<script type="module">
+    document.getElementById("signInForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const personID = document.getElementById("personID").value;
+        const password = document.getElementById("password").value;
+
+        if (!personID || !password) {
+            alert("Invalid credentials");
+            return;
+        }
+
+        console.log("Submitting with personID:", personID); // Debug log
+
+        // Bunu localStorage'a kaydediyoruz
+        localStorage.setItem("personID", personID);
+
+        // Kullanıcı Athlete ise Sidebar aç
+        document.getElementById("athleteLeftSection").style.display = "block";
+    });
+
+</script>-->
+
+</body>
+</html>

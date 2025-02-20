@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <script src="registerPage.js" defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    form {
+      max-width: 400px;
+      margin: auto;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+<h2>Register</h2>
+<form id="registerForm">
+  <label for="id">ID:</label>
+  <input type="text" id="id" name="id" required>
+
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name" required>
+
+  <label for="surname">Surname:</label>
+  <input type="text" id="surname" name="surname" required>
+
+  <label for="birthdate">Birthdate:</label>
+  <input type="date" id="birthdate" name="birthdate" required>
+
+  <label for="password">Password:</label>
+  <input type="text" id="password" name="password" required>
+
+  <label for="role">Are you an Athlete or a Coach?</label>
+  <select id="role" name="role" required>
+    <option value="">Select</option>
+    <option value="athlete">Athlete</option>
+    <option value="coach">Coach</option>
+  </select>
+
+  <button id="registerButton">Register</button>
+</form>
+</body>
+<script src="registerPage.js"></script>
+</html>
