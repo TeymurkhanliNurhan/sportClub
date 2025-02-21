@@ -178,7 +178,31 @@ app.post("/change-password", async (req, res) => {
 
 
 
+//GETTING TOURNAMENT  HISTORY OF AN ATHLETE
+app.get("/athlete/tournaments/:personID", (req, res) => {
+    const { personID } = req.params;
 
+    const query = `
+        SELECT Tournament.Id AS TournamentID,
+               Tournament.Name AS TournamentName,
+               Tournament.Date AS TournamentDate,
+               ta.Rank AS Rank
+        FROM Person
+                 LEFT JOIN Athlete ON Person.Id = Athlete.PersonId
+                 LEFT JOIN Tournament_Athlete ta ON ta.AthleteId = Athlete.Id
+                 LEFT JOIN Tournament ON ta.TournamentId = Tournament.Id
+        WHERE Person.Id = ?`;
+
+    db.all(query, [personID], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: "Database error" });
+        } else if (rows.length === 0) {
+            res.status(404).json({ error: "No tournaments found for this athlete" });
+        } else {
+            res.json(rows);
+        }
+    });
+});
 
 
 
