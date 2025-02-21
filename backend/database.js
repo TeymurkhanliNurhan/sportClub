@@ -3,6 +3,8 @@ const db = new sqlite3.Database('./backend/database.db');
 
 // Tabloların oluşturulması
 db.serialize(() => {
+
+
     db.run(`PRAGMA foreign_keys = ON;`); // Foreign key desteğini aç
 
     db.run(`CREATE TABLE IF NOT EXISTS Person (
@@ -94,6 +96,12 @@ db.serialize(() => {
     )`);
 
     console.log("Database tables created successfully!");
+
+    db.all("SELECT Date FROM Tournament LIMIT 5", [], (err, rows) => {
+        if (err) throw err;
+        console.log(rows);
+    });
+
 });
 
 module.exports = db;

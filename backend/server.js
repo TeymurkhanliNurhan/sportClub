@@ -178,6 +178,53 @@ app.post("/change-password", async (req, res) => {
 
 
 
+//GETTING TOURNAMENT  HISTORY OF AN ATHLETE
+app.get("/athlete/tournaments/:personID", (req, res) => {
+    const { personID } = req.params;
+
+    const query = `
+        SELECT Tournament.Id AS TournamentID,
+               Tournament.Name AS TournamentName,
+               Tournament.Date AS TournamentDate,
+               ta.Rank AS Rank
+        FROM Person
+                 LEFT JOIN Athlete ON Person.Id = Athlete.PersonId
+                 LEFT JOIN Tournament_Athlete ta ON ta.AthleteId = Athlete.Id
+                 LEFT JOIN Tournament ON ta.TournamentId = Tournament.Id
+        WHERE Person.Id = ?`;
+
+    db.all(query, [personID], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: "Database error" });
+        } else if (rows.length === 0) {
+            res.status(404).json({ error: "No tournaments found for this athlete" });
+        } else {
+            res.json(rows);
+        }
+    });
+});
+
+// GETTING FUTURE TOURNAMENTS
+app.get("/athlete/allTournaments", (req, res) => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    const todayTimestamp = Math.floor(now.getTime() / 1000); // Convert to seconds
+
+    const query = `SELECT * FROM Tournament WHERE Date >= ?`; // Include today
+
+    db.all(query, [todayTimestamp], (err, rows) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "No upcoming tournaments found" });
+        }
+        console.log("Fetched Tournaments:", rows);
+        res.json(rows);
+    });
+});
+
 
 
 
