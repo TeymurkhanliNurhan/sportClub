@@ -253,6 +253,7 @@ export async function handleAthlete() {
                 });
         }
 
+        //Tournaments section
     const tournamentLink = document.querySelector('a[href="#tournaments"]');
     if (tournamentLink) {
         tournamentLink.addEventListener("click", async function (event) {
@@ -265,6 +266,7 @@ export async function handleAthlete() {
                 return;
             }
 
+            //Athlete's tournaments
             try {
                 const response = await fetch(`/athlete/tournaments/${personID}`);
                 if (!response.ok) {
@@ -278,7 +280,7 @@ export async function handleAthlete() {
                     return;
                 }
 
-                let tournamentHTML = `<h2>Tournaments</h2><ul>`;
+                let tournamentHTML = `<h2>Your Past Tournaments</h2><ul>`;
                 tournaments.forEach(tournament => {
                     tournamentHTML += `
                 <li>
@@ -293,11 +295,44 @@ export async function handleAthlete() {
 
             } catch (error) {
                 console.error("Error fetching tournaments:", error);
-                updateContainer("<p>Error loading tournaments.</p>");
+                updateContainer("<p>Error loading athlete's tournaments.</p>");
             }
 
+
+            // Fetch and display future tournaments
+            try {
+                const response = await fetch(`/athlete/allTournaments`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch tournament data");
+                }
+
+                const tournaments = await response.json();
+
+                if (tournaments.length === 0) {
+                    updateContainer("<p>No upcoming tournaments found.</p>");
+                    return;
+                }
+
+                let tournamentHTML = `<h2>Upcoming Tournaments</h2><ul>`;
+                tournaments.forEach(tournament => {
+                    const dateObj = new Date(tournament.Date * 1000); // Convert to milliseconds
+                    const formattedDate = dateObj.toLocaleDateString("en-GB"); // "DD/MM/YYYY"
+
+                    tournamentHTML += `
+    <li>
+        <strong>${tournament.Name}</strong> (ID: ${tournament.Id})<br>
+        Date: ${formattedDate}
+    </li>`;
+                });
+
+                tournamentHTML += `</ul>`;
+                updateGroupsChange(tournamentHTML);
+
+            } catch (error) {
+                console.error("Error fetching tournaments:", error);
+                updateGroupsChange("<p>Error loading upcoming tournaments.</p>");
+            }
             updateAthleteGroupMates(` `);
-            updateGroupsChange(` `);
         });
     }
 

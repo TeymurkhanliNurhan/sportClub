@@ -204,6 +204,29 @@ app.get("/athlete/tournaments/:personID", (req, res) => {
     });
 });
 
+// GETTING FUTURE TOURNAMENTS
+app.get("/athlete/allTournaments", (req, res) => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    const todayTimestamp = Math.floor(now.getTime() / 1000); // Convert to seconds
+
+    const query = `SELECT * FROM Tournament WHERE Date >= ?`; // Include today
+
+    db.all(query, [todayTimestamp], (err, rows) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "No upcoming tournaments found" });
+        }
+        console.log("Fetched Tournaments:", rows);
+        res.json(rows);
+    });
+});
+
+
+
 
 
 

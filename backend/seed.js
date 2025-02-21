@@ -50,10 +50,11 @@ db.serialize(() => {
     `);
 
     // Tournament Table
-    db.run(`INSERT INTO Tournament (Id, Name, Date) VALUES 
-        (1, 'Winter Cup', '2025-01-15'),
-        (2, 'Spring League', '2025-04-10')
+    db.run(`INSERT INTO Tournament (Id, Name, Date) VALUES
+         (1, 'Winter Cup', strftime('%s', '2025-01-15')),
+         (2, 'Spring League', strftime('%s', '2025-04-10'))
     `);
+
 
     // Tournament_Athlete Table
     db.run(`INSERT INTO Tournament_Athlete (AthleteId, TournamentId, Rank) VALUES 
