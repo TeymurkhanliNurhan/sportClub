@@ -231,11 +231,16 @@ app.get("/athlete/payments/:personID", (req, res) => {
     const { personID } = req.params;
 
     const query = `
-        SELECT *
+        SELECT Payment.Id AS PaymentId,
+               Payment.Date,
+               Payment.Amount,
+               Payment.Description
         FROM Payment
-                 LEFT JOIN Athlete ON Payment.UserId = Athlete.Id
-                 LEFT JOIN Person ON Athlete.PersonId = Person.Id
+                 INNER JOIN Athlete ON Payment.UserId = Athlete.Id
+                 INNER JOIN Person ON Athlete.PersonId = Person.Id
         WHERE Person.Id = ?`;
+
+
 
     db.all(query, [personID], (err, rows) => {
         if (err) {
@@ -243,12 +248,70 @@ app.get("/athlete/payments/:personID", (req, res) => {
         } else if (rows.length === 0) {
             res.status(404).json({ error: "No payments found for this athlete" });
         } else {
+            console.log(rows); // <-- BURAYA EKLE
             res.json(rows);
         }
     });
+
 });
 
+// Function to calculate balance using PersonId
+function calculateBalanceByPerson(personId) {
+    return new Promise((resolve, reject) => {
+        db.get(`
+                    SELECT MIN(p.Date) AS firstPaymentDate, tg.MonthlyFee
+                    FROM Payment p
+                             JOIN Athlete a ON p.UserId = a.Id
+                             JOIN Person per ON a.PersonId = per.Id
+                             JOIN TrainingGroup tg ON a.GroupId = tg.Id
+                    WHERE per.Id = ?`,
+            [personId],
+            (err, row) => {
+                if (err) return reject(err);
+                if (!row || !row.firstPaymentDate) return reject("No payments found for this person.");
 
+                let { firstPaymentDate, MonthlyFee } = row;
+                let totalAccount = 0;
+
+                db.all(`
+                            SELECT Amount, Date
+                            FROM Payment
+                            WHERE UserId IN (SELECT Id FROM Athlete WHERE PersonId = ?)
+                            ORDER BY Date ASC`,
+                    [personId],
+                    (err, payments) => {
+                        if (err) return reject(err);
+
+                        payments.forEach(payment => totalAccount += payment.Amount);
+
+                        let currentDate = firstPaymentDate;
+                        while (totalAccount >= MonthlyFee) {
+                            const nextMonth = new Date(currentDate * 1000);
+                            nextMonth.setUTCMonth(nextMonth.getUTCMonth() + 1);
+                            nextMonth.setUTCDate(1);
+                            currentDate = Math.floor(nextMonth.getTime() / 1000);
+
+                            totalAccount -= MonthlyFee;
+                        }
+
+                        resolve({ finalBalance: totalAccount });
+                    }
+                );
+            }
+        );
+    });
+}
+
+// API route to get balance using PersonId
+app.get('/athlete/balance/:personId', async (req, res) => {
+    const personId = req.params.personId;
+    try {
+        const balance = await calculateBalanceByPerson(personId);
+        res.json(balance);
+    } catch (error) {
+        res.status(500).json({ error: error.toString() });
+    }
+});
 
 
 

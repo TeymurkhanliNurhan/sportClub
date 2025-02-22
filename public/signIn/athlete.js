@@ -347,43 +347,41 @@ export async function handleAthlete() {
                 return;
             }
 
-            let totalMoney=0;
+            //let totalMoney=0;
             try {
-                const response = await fetch(`/athlete/payments/${personID}`);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch tournament data");
-                }
+                        const response = await fetch(`/athlete/payments/${personID}`);
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch payment data");
+                        }
 
-                const payments = await response.json();
+                        const payments = await response.json();
+                        console.log(payments); // <-- BURAYA EKLE
 
-                if (payments.length === 0) {
-                    updateContainer("<p>No tournaments found for this athlete.</p>");
-                    return;
-                }
+                        let paymentHTML = `<h2>Your Past Payments</h2><ul>`;
+                        payments.forEach(payment => {
+                            paymentHTML += `
+                        <li>
+                            <strong>ID: ${payment.PaymentId}</strong><br>
+                            Date: ${payment.Date} <br>
+                            Amount: ${payment.Amount}<br>
+                            Description: ${payment.Description}<br>
+                        </li>`;
+                        });
+                        paymentHTML += `</ul>`;
 
+                        updateContainer(paymentHTML);
+                    } catch (error) {
+                        console.error(error);
+                    }
 
-
-                let paymentHTML = `<h2>Your Past Tournaments</h2><ul>`;
-                payments.forEach(payment => {
-                    totalMoney+=payment.Amount;
-                    paymentHTML += `
-                <li>
-                    <strong>ID: ${payment.Id}</strong><br>
-                    Date: ${payment.Date} <br>
-                    Rank: ${payment.Amount}<br>
-                    Amount: ${payment.Description}<br>
-                </li>`;
-                });
-                paymentHTML += `</ul>`;
-
-                updateContainer(paymentHTML);
-                updateGroupsChange(`<h5>Total Amount: ${totalMoney}</h5>`);
-
+            try {
+                const response = await fetch(`/athlete/balance/${personID}`);
+                const data = await response.json();
+                updateGroupsChange(`<h5>Balance for Person: ${data.finalBalance}</h5>`)
+            } catch (error) {
+                console.error("Error fetching balance:", error);
             }
-            catch (error){
-                console.error("Error fetching payments:", error);
-                updateContainer("<p>Error loading athlete's payments.</p>");
-            }
+
             updateAthleteGroupMates(` `);
             //updateGroupsChange(` `);
         });
