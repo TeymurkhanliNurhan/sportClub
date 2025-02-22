@@ -226,6 +226,30 @@ app.get("/athlete/allTournaments", (req, res) => {
 });
 
 
+//GETTING PAYMENTS OF ATHLETE
+app.get("/athlete/payments/:personID", (req, res) => {
+    const { personID } = req.params;
+
+    const query = `
+        SELECT *
+        FROM Payment
+                 LEFT JOIN Athlete ON Payment.UserId = Athlete.Id
+                 LEFT JOIN Person ON Athlete.PersonId = Person.Id
+        WHERE Person.Id = ?`;
+
+    db.all(query, [personID], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: "Database error" });
+        } else if (rows.length === 0) {
+            res.status(404).json({ error: "No payments found for this athlete" });
+        } else {
+            res.json(rows);
+        }
+    });
+});
+
+
+
 
 
 

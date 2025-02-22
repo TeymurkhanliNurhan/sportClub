@@ -71,6 +71,7 @@ db.serialize(() => {
     // Payment Table
     db.run(`INSERT INTO Payment (Id, Date, Amount, Description, UserId) VALUES 
         (1, '2025-02-01', 200, 'Monthly Fee', 1),
+        (3, '2025-02-20', 250, 'Monthly Fee', 1),
         (2, '2025-02-05', 300, 'Monthly Fee', 2)
     `);
 

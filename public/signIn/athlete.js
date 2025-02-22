@@ -336,6 +336,60 @@ export async function handleAthlete() {
         });
     }
 
+    const paymentsLink = document.querySelector('a[href="#payments"]');
+    if (paymentsLink) {
+        paymentsLink.addEventListener("click", async function (event) {
+            event.preventDefault();
+            const personID = document.getElementById("personID").value; // Fix: Get the value, not the element
+
+            if (!personID) {
+                console.error("No person ID provided.");
+                return;
+            }
+
+            let totalMoney=0;
+            try {
+                const response = await fetch(`/athlete/payments/${personID}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch tournament data");
+                }
+
+                const payments = await response.json();
+
+                if (payments.length === 0) {
+                    updateContainer("<p>No tournaments found for this athlete.</p>");
+                    return;
+                }
+
+
+
+                let paymentHTML = `<h2>Your Past Tournaments</h2><ul>`;
+                payments.forEach(payment => {
+                    totalMoney+=payment.Amount;
+                    paymentHTML += `
+                <li>
+                    <strong>ID: ${payment.Id}</strong><br>
+                    Date: ${payment.Date} <br>
+                    Rank: ${payment.Amount}<br>
+                    Amount: ${payment.Description}<br>
+                </li>`;
+                });
+                paymentHTML += `</ul>`;
+
+                updateContainer(paymentHTML);
+                updateGroupsChange(`<h5>Total Amount: ${totalMoney}</h5>`);
+
+            }
+            catch (error){
+                console.error("Error fetching payments:", error);
+                updateContainer("<p>Error loading athlete's payments.</p>");
+            }
+            updateAthleteGroupMates(` `);
+            //updateGroupsChange(` `);
+        });
+    }
+
+
 
 
 

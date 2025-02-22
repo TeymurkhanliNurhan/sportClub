@@ -97,10 +97,12 @@ db.serialize(() => {
 
     console.log("Database tables created successfully!");
 
+    /*
     db.all("SELECT Date FROM Tournament LIMIT 5", [], (err, rows) => {
         if (err) throw err;
         console.log(rows);
     });
+*/
 
 });
 
