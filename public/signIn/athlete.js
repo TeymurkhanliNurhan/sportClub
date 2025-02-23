@@ -392,7 +392,7 @@ export async function handleAthlete() {
 
 
             try {
-                const response = await fetch(`/api/earliest-payment/1`);
+                const response = await fetch(`/api/earliest-payment/${personID}`);
                 const payment = await response.json();
 
                 const firstDate = Date.parse(payment.Date); // String tarihi milisaniyeye çevir
@@ -406,11 +406,16 @@ export async function handleAthlete() {
                 let currentBudget=totalMoney-monthlyFee*paymentsTaken;
 
 
+                const statusMessage = currentBudget >= 0
+                    ? `Days to the next payment: ${toNextPayment}`
+                    : `Days till being removed: ${toNextPayment}`;
+
                 updateAthleteGroupMates(`
-                <h3>Your current situation:</h3>
-                <p>Your current budget: ${currentBudget}</p>
-                <p>${currentBudget>=0? "Days to the next payment" : "Days till being removed "} ${toNextPayment}</p>
-                `);
+                    <h3>Your current situation:</h3>
+                    <p>Your current budget: ${currentBudget}</p>
+                    <p>${statusMessage}</p>
+            `);
+
 
                 console.log(`Gün farkı: ${diffInDays} gün`);
             } catch (error) {
