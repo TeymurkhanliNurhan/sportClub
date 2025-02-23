@@ -347,7 +347,7 @@ export async function handleAthlete() {
                 return;
             }
 
-            //let totalMoney=0;
+            let totalMoney=0;
             try {
                         const response = await fetch(`/athlete/payments/${personID}`);
                         if (!response.ok) {
@@ -359,6 +359,7 @@ export async function handleAthlete() {
 
                         let paymentHTML = `<h2>Your Past Payments</h2><ul>`;
                         payments.forEach(payment => {
+                            totalMoney+=payment.Amount;
                             paymentHTML += `
                         <li>
                             <strong>ID: ${payment.PaymentId}</strong><br>
@@ -374,16 +375,63 @@ export async function handleAthlete() {
                         console.error(error);
                     }
 
+
+                    let monthlyFee;
+                    try {
+                        const response = await fetch(`/athlete/groups/${personID}`);
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        const groupData = await response.json();
+                        monthlyFee=groupData.MonthlyFee;
+
+                    }
+                    catch (error){
+                        console.error("Error fetching payment:", error);
+                    }
+
+
             try {
-                const response = await fetch(`/athlete/balance/${personID}`);
-                const data = await response.json();
-                updateGroupsChange(`<h5>Balance for Person: ${data.finalBalance}</h5>`)
+                const response = await fetch("/api/earliest-payment");
+                const payment = await response.json();
+
+                const firstDate = Date.parse(payment.Date); // String tarihi milisaniyeye çevir
+                const today = new Date().getTime(); // Bugünün milisaniye cinsinden değeri
+
+                const diffInDays = Math.floor((today - firstDate) / (1000 * 60 * 60 * 24));
+
+                const paymentsTaken = Math.floor(diffInDays / 30)+1;
+                const toNextPayment= 30- diffInDays%30;
+
+                let currentBudget=totalMoney-monthlyFee*paymentsTaken;
+
+
+                updateAthleteGroupMates(`
+                <h3>Your current situation:</h3>
+                <p>Your current budget: ${currentBudget}</p>
+                <p>${currentBudget>=0? "Days to the next payment" : "Days till being removed "} ${toNextPayment}</p>
+                `);
+
+                console.log(`Gün farkı: ${diffInDays} gün`);
+
+                /*
+                updateAthleteGroupMates( `
+            <p><strong>ID:</strong> ${payment.Id}</p>
+            <p><strong>Date:</strong> ${payment.Date}</p>
+            <p><strong>Amount:</strong> ${payment.Amount}</p>
+            <p><strong>Description:</strong> ${payment.Description}</p>
+            <p><strong>User ID:</strong> ${payment.UserId}</p>
+        `);
+        */
+
             } catch (error) {
-                console.error("Error fetching balance:", error);
+                console.error("Error fetching payment:", error);
             }
 
-            updateAthleteGroupMates(` `);
-            //updateGroupsChange(` `);
+
+
+            //updateAthleteGroupMates(` `);
+            updateGroupsChange(` `);
         });
     }
 

@@ -4,8 +4,11 @@ const bodyParser = require('body-parser');
 const db = require('./database'); // database.js dosyasını burada import edin
 const sqlite3 = require("sqlite3").verbose();
 const bcrypt = require("bcrypt");
+const cors = require("cors");
+
 
 const app = express();
+app.use(cors());
 const PORT = 3003;
 
 
@@ -313,7 +316,16 @@ app.get('/athlete/balance/:personId', async (req, res) => {
     }
 });
 
-
+// API to get the earliest payment
+app.get("/api/earliest-payment", (req, res) => {
+    db.get("SELECT * FROM Payment ORDER BY Date ASC LIMIT 1", (err, row) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(row);
+    });
+});
 
 
 
