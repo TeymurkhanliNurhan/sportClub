@@ -317,15 +317,34 @@ app.get('/athlete/balance/:personId', async (req, res) => {
 });
 
 // API to get the earliest payment
-app.get("/api/earliest-payment", (req, res) => {
-    db.get("SELECT * FROM Payment ORDER BY Date ASC LIMIT 1", (err, row) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
+app.get("/api/earliest-payment/:personID", async (req, res) => {
+    const personID = req.params.personID;
+
+    console.log("Received personID:", personID); // Debugging line
+
+    db.get(
+        "SELECT * FROM Payment JOIN Athlete ON Payment.UserId = Athlete.Id WHERE Athlete.personId = ? ORDER BY Date ASC LIMIT 1",
+        [personID],
+        (err, row) => {
+            if (err) {
+                console.error("Database error:", err.message); // Debugging line
+                res.status(500).json({ error: err.message });
+                return;
+            }
+            if (!row) {
+                console.warn("No payment found for personID:", personID); // Debugging line
+                res.status(404).json({ error: "No payment found" });
+                return;
+            }
+            res.json(row);
         }
-        res.json(row);
-    });
+    );
 });
+
+
+
+
+
 
 
 

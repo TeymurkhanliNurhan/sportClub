@@ -392,7 +392,7 @@ export async function handleAthlete() {
 
 
             try {
-                const response = await fetch("/api/earliest-payment");
+                const response = await fetch(`/api/earliest-payment/1`);
                 const payment = await response.json();
 
                 const firstDate = Date.parse(payment.Date); // String tarihi milisaniyeye çevir
@@ -413,17 +413,6 @@ export async function handleAthlete() {
                 `);
 
                 console.log(`Gün farkı: ${diffInDays} gün`);
-
-                /*
-                updateAthleteGroupMates( `
-            <p><strong>ID:</strong> ${payment.Id}</p>
-            <p><strong>Date:</strong> ${payment.Date}</p>
-            <p><strong>Amount:</strong> ${payment.Amount}</p>
-            <p><strong>Description:</strong> ${payment.Description}</p>
-            <p><strong>User ID:</strong> ${payment.UserId}</p>
-        `);
-        */
-
             } catch (error) {
                 console.error("Error fetching payment:", error);
             }
