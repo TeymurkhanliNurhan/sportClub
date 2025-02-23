@@ -336,6 +336,95 @@ export async function handleAthlete() {
         });
     }
 
+    const paymentsLink = document.querySelector('a[href="#payments"]');
+    if (paymentsLink) {
+        paymentsLink.addEventListener("click", async function (event) {
+            event.preventDefault();
+            const personID = document.getElementById("personID").value; // Fix: Get the value, not the element
+
+            if (!personID) {
+                console.error("No person ID provided.");
+                return;
+            }
+
+            let totalMoney=0;
+            try {
+                        const response = await fetch(`/athlete/payments/${personID}`);
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch payment data");
+                        }
+
+                        const payments = await response.json();
+                        console.log(payments); // <-- BURAYA EKLE
+
+                        let paymentHTML = `<h2>Your Past Payments</h2><ul>`;
+                        payments.forEach(payment => {
+                            totalMoney+=payment.Amount;
+                            paymentHTML += `
+                        <li>
+                            <strong>ID: ${payment.PaymentId}</strong><br>
+                            Date: ${payment.Date} <br>
+                            Amount: ${payment.Amount}<br>
+                            Description: ${payment.Description}<br>
+                        </li>`;
+                        });
+                        paymentHTML += `</ul>`;
+
+                        updateContainer(paymentHTML);
+                    } catch (error) {
+                        console.error(error);
+                    }
+
+
+                    let monthlyFee;
+                    try {
+                        const response = await fetch(`/athlete/groups/${personID}`);
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        const groupData = await response.json();
+                        monthlyFee=groupData.MonthlyFee;
+
+                    }
+                    catch (error){
+                        console.error("Error fetching payment:", error);
+                    }
+
+
+            try {
+                const response = await fetch(`/api/earliest-payment/1`);
+                const payment = await response.json();
+
+                const firstDate = Date.parse(payment.Date); // String tarihi milisaniyeye çevir
+                const today = new Date().getTime(); // Bugünün milisaniye cinsinden değeri
+
+                const diffInDays = Math.floor((today - firstDate) / (1000 * 60 * 60 * 24));
+
+                const paymentsTaken = Math.floor(diffInDays / 30)+1;
+                const toNextPayment= 30- diffInDays%30;
+
+                let currentBudget=totalMoney-monthlyFee*paymentsTaken;
+
+
+                updateAthleteGroupMates(`
+                <h3>Your current situation:</h3>
+                <p>Your current budget: ${currentBudget}</p>
+                <p>${currentBudget>=0? "Days to the next payment" : "Days till being removed "} ${toNextPayment}</p>
+                `);
+
+                console.log(`Gün farkı: ${diffInDays} gün`);
+            } catch (error) {
+                console.error("Error fetching payment:", error);
+            }
+
+
+
+            //updateAthleteGroupMates(` `);
+            updateGroupsChange(` `);
+        });
+    }
+
+
 
 
 
