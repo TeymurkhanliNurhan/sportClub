@@ -1,6 +1,8 @@
 # 🏆 SportClub
 
 This repository contains a sports club management system. Users can manage club information, register athletes, and track various data.
+The purpose of this project is practicing my knowledge on node.js.
+# PROJECT IS IN PROGRESS
 
 ## 📌 Project Description
 SportClub is designed to facilitate the management of a sports club. It allows users to handle club members, athletes, and events efficiently.
