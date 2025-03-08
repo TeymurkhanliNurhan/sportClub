@@ -18,15 +18,19 @@ SportClub is designed to facilitate the management of a sports club. It allows u
 
 ## 🔧 Installation & Usage
 1. **Clone the repository:**
-   
-bash
+   ```bash
    git clone https://github.com/TeymurkhanliNurhan/sportClub.git
+   cd sportClubit clone https://github.com/TeymurkhanliNurhan/sportClub.git
 
 2. **Start the backend** :
-   
+   cd backend
+   npm install
+   npm start
+4. **Run the frontend**:
+  cd ../frontend
+  npm install
+  npm start
 
-3. **Run the frontend**:
-  
 ## 📜 Usage
 1. Add a new athlete.
 2. Create an event or tournament.
