@@ -14,7 +14,7 @@ SportClub is designed to facilitate the management of a sports club. It allows u
 - 🔍 User-friendly interface for easy access
 
 ## 🛠 Technologies Used
-- **Backend:** Java (node.js)
+- **Backend:** JavaScript (node.js)
 - **Frontend:** HTML, CSS, JavaScript
 - **Database:** SQLite
 
